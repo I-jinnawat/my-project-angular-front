@@ -1,1 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
+@use './style/theme' as theme;
+@use './style/theme-light' as theme-light;
+
+body {
+  background-color: theme.$bg-color;
+  color: theme.$text-color;
+}
