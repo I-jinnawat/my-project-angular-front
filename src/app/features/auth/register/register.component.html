@@ -1,1 +1,47 @@
-<p>register works!</p>
+<form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="needs-validation" novalidate>
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input
+      type="email"
+      class="form-control"
+      id="email"
+      name="email"
+      required
+      [(ngModel)]="registerData.email">
+  </div>
+
+  <div class="mb-3">
+    <label for="username" class="form-label">Username</label>
+    <input
+      type="text"
+      class="form-control"
+      id="username"
+      name="username"
+      required
+      [(ngModel)]="registerData.username">
+  </div>
+
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input
+      type="password"
+      class="form-control"
+      id="password"
+      name="password"
+      required
+      [(ngModel)]="registerData.password">
+  </div>
+
+  <div class="mb-3">
+    <label for="confirmPassword" class="form-label">Confirm Password</label>
+    <input
+      type="password"
+      class="form-control"
+      id="confirmPassword"
+      name="confirmPassword"
+      required
+      [(ngModel)]="registerData.confirmPassword">
+  </div>
+
+  <button type="submit" class="btn btn-success w-100" [disabled]="!registerForm.valid">Register</button>
+</form>

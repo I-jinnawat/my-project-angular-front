@@ -1,63 +1,71 @@
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../../core/auth/services/user.service';
+
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
   standalone: true,
-  styleUrls:['login.component.scss'],
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent {
-  public authType = '';
-  public title: string = '';
-  username = '';
-  password = '';
+export class LoginComponent implements OnInit {
+  get username() {
+    return this.loginForm.get('username')!;
+  }
+
+  get password() {
+    return this.loginForm.get('password')!;
+  }
+
+  loginForm!: FormGroup;
+  isSubmitting = false;
+  errors: string[] = [];
 
   constructor(
-    private http: HttpClient,
-    private router: Router,
-    private readonly route: ActivatedRoute
+    private fb: FormBuilder,
+    private userService: UserService,
+    private router: Router
   ) {}
+
   ngOnInit(): void {
-    this.authType = this.route.snapshot.url.at(-1)!.path;
-    this.title = this.authType === 'login' ? 'Sign in' : 'Sign up';
-    // if (this.authType === "register") {
-    //   this.authForm.addControl(
-    //     "email",
-    //     new FormControl("", {
-    //       validators: [Validators.required],
-    //       nonNullable: true,
-    //     }),
-    //   );
-    // }
+    this.loginForm = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    });
   }
+
+  get f() {
+    return this.loginForm.controls;
+  }
+
   onSubmit(): void {
-    const loginData = {
-      username: this.username,
-      password: this.password,
+    if (this.loginForm.invalid) return;
+
+    this.isSubmitting = true;
+    this.errors = [];
+
+    const credentials = {
+      username: this.loginForm.value.username,
+      password: this.loginForm.value.password,
     };
-
-    this.http
-      .post<any>('http://localhost:3000/auth/login', loginData)
-      .subscribe({
-        next: (response) => {
-          console.log('Login success', response);
-
-          // ถ้ามี token จาก server ให้เก็บไว้
-          if (response.token) {
-            localStorage.setItem('auth_token', response.token);
-            this.router.navigate(['/dashboard']);
-          } else {
-            alert('Login failed: No token received');
-          }
-        },
-        error: (err) => {
-          console.error('Login error', err);
-          alert('Login failed: ' + (err.error?.message || 'Unknown error'));
-        },
-      });
+    this.userService.login(credentials).subscribe({
+      next: () => {
+        this.router.navigate(['/auth/register']);
+      },
+      error: (err) => {
+        console.error('Login failed', err);
+        this.errors = ['Invalid credentials or server error'];
+        this.isSubmitting = false;
+      },
+    });
   }
 }

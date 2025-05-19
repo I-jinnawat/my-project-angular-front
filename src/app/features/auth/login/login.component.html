@@ -1,35 +1,33 @@
-<h2>Login</h2>
-<p class="text-xs-center">
-          @if (authType === "register") {
-            <a [routerLink]="['/auth/login']">Have an account?</a>
-          }
-
-          @if (authType === "login") {
-            <a [routerLink]="['/auth/register']">Need an account?</a>
-          }
-        </p>
-<form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-  <div>
-    <label for="username">Username:</label>
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+  <div class="mb-3">
+    <label for="username" class="form-label">Username</label>
     <input
       type="text"
       id="username"
-      name="username"
-      required
-      [(ngModel)]="username"
+      class="form-control"
+      formControlName="username"
+     [class.is-invalid]="username.invalid && username.touched"
     />
+    <div class="invalid-feedback" *ngIf="username.errors && username.touched">
+      Username is required.
+    </div>
   </div>
 
-  <div>
-    <label for="password">Password:</label>
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
     <input
       type="password"
       id="password"
-      name="password"
-      required
-      [(ngModel)]="password"
+      class="form-control"
+      formControlName="password"
+      [class.is-invalid]="password.touched && password.invalid"
     />
+    <div class="invalid-feedback" *ngIf="password.errors && password.touched">
+      Password is required.
+    </div>
   </div>
 
-  <button type="submit" [disabled]="loginForm.invalid" class="my-button"> {{ title }}</button>
+  <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid || isSubmitting">
+    {{ isSubmitting ? 'Logging in...' : 'Login' }}
+  </button>
 </form>
