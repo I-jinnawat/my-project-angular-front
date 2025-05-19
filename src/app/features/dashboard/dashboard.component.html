@@ -1,1 +1,4 @@
-<p>dashboard works!</p>
+<app-layout-header></app-layout-header>
+ <ng-container *ngIf="user$ | async as user">
+      <p>Welcome, {{ user.username }}!</p>
+    </ng-container>

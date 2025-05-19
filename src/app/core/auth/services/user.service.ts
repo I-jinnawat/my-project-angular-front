@@ -23,6 +23,25 @@ export class UserService {
     private readonly router: Router
   ) {}
 
+  async initializeUser() {
+    const token = this.jwtService.getToken();
+    const headers = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    if (token) {
+      await this.http.get<any>(`${environment.apiUrl}users/profile`,headers).subscribe({
+        next: (user) => {
+          this.setAuth(user, token);
+        },
+        error: () => {
+          this.logout();
+        },
+      });
+    }
+  }
+
   login(credentials: {
     username: string;
     password: string;
@@ -59,9 +78,10 @@ export class UserService {
   }
 
   // getCurrentUser(): Observable<{ user: User }> {
-  //   return this.http.get<{ user: User }>('/user').pipe(
+  //   return this.http.get<{ user: User }>(`${environment.apiUrl}user`).pipe(
   //     tap({
-  //       next: ({ user }) => this.setAuth(user),
+  //       next: ({ user }) =>
+  //         this.setAuth(user, this.jwtService.getToken() || ''),
   //       error: () => this.purgeAuth(),
   //     }),
   //     shareReplay(1)

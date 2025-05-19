@@ -1,68 +1,20 @@
-<router-outlet />
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header text-center">
+      <h3>Welcome Friend</h3>
+    </div>
+    <div class="card-body">
+      <router-outlet />
 
-<div class="auth-page">
-  <div class="container page">
-    <div class="row">
-      <div class="col-md-6 offset-md-3 col-xs-12">
-        <h1 class="text-xs-center">{{ title }}</h1>
-        <p class="text-xs-center"> 
-          @if (authType === "register") {
-            <a [routerLink]="['/auth/login']">Have an account?</a>
-          }
-
-          @if (authType === "login") {
-            <a [routerLink]="['/auth/register']">Need an account?</a>
-          }
-        </p>
-        <app-list-errors [errors]="errors" />
-        <form [formGroup]="authForm" (ngSubmit)="submitForm()">
-          <fieldset [disabled]="isSubmitting">
-            <fieldset class="form-group">
-              @if (authType === "register") {
-                <input
-                  formControlName="email"
-                  placeholder="Email"
-                  class="form-control form-control-lg"
-                  type="text"
-                />
-              }
-            </fieldset>
-            <fieldset class="form-group">
-              <input
-                formControlName="username"
-                placeholder="Username"
-                class="form-control form-control-lg"
-                type="text"
-              />
-            </fieldset>
-            <fieldset class="form-group">
-              <input
-                formControlName="password"
-                placeholder="Password"
-                class="form-control form-control-lg"
-                type="password"
-              />
-            </fieldset>
-              <fieldset class="form-group">
-             @if (authType === "register") {
-               <input
-                  formControlName="confirmPassword"
-                  placeholder="ConfirmPassword"
-                  class="form-control form-control-lg"
-                  type="password"
-                />
-             }
-             </fieldset>
-            <button
-              class="btn btn-lg btn-primary pull-xs-right"
-              [disabled]="!authForm.valid"
-              type="submit"
-            >
-              {{ title }}
-            </button>
-          </fieldset>
-        </form>
-      </div>
+      @if (authType === 'register') {
+      <p>มีบัญชีแล้ว?
+        <a [routerLink]="'/auth/login'"> เข้าสู่ระบบ</a>
+      </p>
+      }@else {
+      <p>
+        <a [routerLink]="'/auth/register'">ยังไม่มี? สมัคร</a>
+      </p>
+      }
     </div>
   </div>
 </div>

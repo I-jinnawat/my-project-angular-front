@@ -5,13 +5,18 @@ import {
   FormControl,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { ListErrorsComponent } from '../../shared/components/list-errors.component';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterLink,
+} from '@angular/router';
 import { Errors } from '../../core/models/errors.model';
 import { UserService } from '../../core/auth/services/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { RouterOutlet } from '@angular/router';
+
 
 interface AuthForm {
   username: FormControl<string>;
@@ -23,7 +28,7 @@ interface AuthForm {
 @Component({
   selector: 'app-auth-page',
   templateUrl: './auth.component.html',
-  imports: [RouterLink, ListErrorsComponent, ReactiveFormsModule,RouterOutlet],
+  imports: [RouterOutlet, RouterLink, ReactiveFormsModule],
   standalone: true,
 })
 export class AuthComponent implements OnInit {
@@ -60,15 +65,18 @@ export class AuthComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  this.router.events
-    .pipe(filter((event) => event instanceof NavigationEnd))
-    .subscribe(() => {
-      const childRoute = this.route.firstChild;
-      this.authType = childRoute?.snapshot.url[0]?.path ?? '';
-      this.title = this.authType === 'login' ? 'Sign in' : 'Sign up';
-    });
-}
-
+    this.updateAuthType();
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.updateAuthType(); // update when route changes
+      });
+  }
+  private updateAuthType(): void {
+    const child = this.route.firstChild;
+    this.authType = child?.snapshot.url[0]?.path ?? '';
+    this.title = this.authType === 'login' ? 'Sign in' : 'Sign up';
+  }
   submitForm(): void {
     this.isSubmitting = true;
     this.errors = { errors: {} };

@@ -3,24 +3,19 @@ import { Router } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
 import { authConfig } from '../auth-config';
 import { environment } from '../../../../environments/environment';
+import { JwtService } from './jwt.service';
+import { UserService } from './user.service';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private isDoneLoadingSubject$ = new ReplaySubject<boolean>();
   public isDoneLoading$ = this.isDoneLoadingSubject$.asObservable();
-  private tokenKey = 'auth_token';
+  private tokenKey = 'access_token';
 
-  constructor(private router: Router) {}
-  public runInitialLoginSequence(): Promise<void> {
-    return new Promise((resolve) => {
-      authConfig.redirectUri = environment.redirectUri;
-
-      this.isDoneLoadingSubject$.next(true);
-
-      resolve();
-    });
-  }
+  constructor(
+    private router: Router,
+  ) {}
   // ✅ Login (บันทึก token)
   login(token: string): void {
     localStorage.setItem(this.tokenKey, token);
